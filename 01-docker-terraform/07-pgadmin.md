@@ -20,6 +20,16 @@ docker run -it \
   dpage/pgadmin4
 ```
 
+``` PowerShell
+docker run -d --name pgadmin `
+  -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" `
+  -e PGADMIN_DEFAULT_PASSWORD="root" `
+  -v pgadmin_data:/var/lib/pgadmin `
+  -p 8085:80 `
+  --restart unless-stopped `
+  dpage/pgadmin4
+```
+
 The `-v pgadmin_data:/var/lib/pgadmin` volume mapping saves pgAdmin settings (server connections, preferences) so you don't have to reconfigure it every time you restart the container.
 
 ### Parameters Explained
