@@ -6,7 +6,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from tqdm.auto import tqdm
 
-dtype = {
+taxi_dtype = {
     "VendorID": "Int64",
     "passenger_count": "Int64",
     "trip_distance": "float64",
@@ -25,6 +25,13 @@ dtype = {
     "congestion_surcharge": "float64"
 }
 
+zones_dtype = {
+    "LocationID": "Int64",
+    "Borough": "string",
+    "Zone": "string",
+    "service_zone": "string"
+}
+
 parse_dates = [
     "tpep_pickup_datetime",
     "tpep_dropoff_datetime"
@@ -39,19 +46,25 @@ parse_dates = [
 @click.option('--pg-db', default='ny_taxi', help='PostgreSQL database name')
 @click.option('--year', default=2021, type=int, help='Year of the data')
 @click.option('--month', default=1, type=int, help='Month of the data')
-@click.option('--target-table', default='yellow_taxi_data', help='Target table name')
+@click.option('--target-table', default='zones', help='Target table name')
 @click.option('--chunksize', default=100000, type=int, help='Chunk size for reading CSV')
-def run(pg_user, pg_pass, pg_host, pg_port, pg_db, year, month, target_table, chunksize):
+@click.option('--tag', default='misc', type=click.Choice(['taxi', 'misc']), help='Data type to ingest')
+def run(pg_user, pg_pass, pg_host, pg_port, pg_db, year, month, target_table, chunksize, tag):
     """Ingest NYC taxi data into PostgreSQL database."""
-    prefix = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow'
-    url = f'{prefix}/yellow_tripdata_{year}-{month:02d}.csv.gz'
+    prefix = f'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{tag}'
+    
+    url = ''
+    if tag == 'taxi':
+        url = f'{prefix}/yellow_tripdata_{year}-{month:02d}.csv.gz'
+    elif tag == 'misc':
+        url = f'{prefix}/taxi_zone_lookup.csv'
 
     engine = create_engine(f'postgresql+psycopg://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}')
 
     df_iter = pd.read_csv(
         url,
-        dtype=dtype,
-        parse_dates=parse_dates,
+        dtype=taxi_dtype if tag == 'taxi' else zones_dtype,
+        parse_dates=parse_dates if tag == 'taxi' else None,
         iterator=True,
         chunksize=chunksize,
     )
