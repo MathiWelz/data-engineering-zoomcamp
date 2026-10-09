@@ -17,3 +17,4 @@ serving_dir
 *.parquet
 *.csv
 *.duckdb
+**src/data_engineering_zoomcamp/01dockerTerraform/secrets/
