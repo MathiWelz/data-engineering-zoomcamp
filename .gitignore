@@ -17,4 +17,8 @@ serving_dir
 *.parquet
 *.csv
 *.duckdb
-**src/data_engineering_zoomcamp/01dockerTerraform/terraform/keys
+**src/data_engineering_zoomcamp/module_01_docker_terraform/terraform/keys
+
+terraform.tfstate
+terraform.tfstate.*
+.terraform/
