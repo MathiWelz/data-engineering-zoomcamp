@@ -23,3 +23,16 @@ terraform.tfstate
 terraform.tfstate.*
 .terraform/
 **/pgadmin_data/
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+.env
